@@ -13,10 +13,13 @@ api = Api(app)
 
 users = []
 
-users_fields = {
+get_users_fields = {
     'id': fields.Integer,
     'name': fields.String,
     'email': fields.String
+}
+post_users_fields = {
+    'id': fields.Integer
 }
 
 
@@ -28,7 +31,6 @@ def load_db(filename='users.db'):
         return pickle.load(open(filename, 'rb'))
     else:
         return []
-
 
 class UserListApi(Resource):
     def __init__(self):
@@ -54,7 +56,7 @@ class UserListApi(Resource):
 
     @staticmethod
     def get():
-        return map(lambda t: marshal(t, users_fields), users)
+        return map(lambda t: marshal(t, get_users_fields), users)
 
     def post(self):
         args = self.reqparse.parse_args()
@@ -80,7 +82,7 @@ class UserListApi(Resource):
             'password': generate_password_hash(args['password'])
         }
         users.append(user)
-        return marshal(user, users_fields), 201
+        return marshal(user, post_users_fields), 201
 
 
 class UserApi(Resource):
@@ -99,7 +101,7 @@ class UserApi(Resource):
         user = filter(lambda item: item['id'] == user_id, users)
         if len(user) == 0:
             abort(404)
-        return {'user': marshal(user[0], users_fields)}
+        return {'user': marshal(user[0], get_users_fields)}
 
     def put(self, user_id):
         user = filter(lambda item: item['id'] == user_id, users)
@@ -111,7 +113,7 @@ class UserApi(Resource):
         for k, v in args.iteritems():
             if v != None and k != 'id' and k != 'password':
                 user[k] = v
-        return marshal(user, users_fields)
+        return marshal(user, get_users_fields)
 
     @staticmethod
     def delete(user_id):

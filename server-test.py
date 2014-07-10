@@ -30,10 +30,7 @@ class ServerTestCase(unittest.TestCase):
 
     def test_add_user(self):
         result = json.loads(self.add_user().data)
-        assert result['name'] == 'test'
-        assert result['email'] == 'test@mail.com'
         assert result['id'] == 1
-        assert result.get('password', None) is None
 
     def test_not_possible_to_add_user_twice(self):
         json.loads(self.add_user().data)
@@ -44,6 +41,10 @@ class ServerTestCase(unittest.TestCase):
         result = json.loads(self.add_user('', 'test@mail.com', '12345678').data)
         assert result['error'] == 'Name field can not be empty'
 
+    def test_empty_mail(self):
+        result = json.loads(self.add_user('test', '', '12345678').data)
+        assert result['error'] == 'Invalid email'
+
     def test_short_password(self):
         result = json.loads(self.add_user('test', 'test@mail.com', '12345').data)
         assert result['error'] == 'Password should be at least 8 characters'
@@ -51,9 +52,9 @@ class ServerTestCase(unittest.TestCase):
     def test_update_user(self):
         user = json.loads(self.add_user('test', 'test@mail.com', '123451235').data)
         result = json.loads(self.update_user(user['id'], dict(name='updated', id='2', email='updated@mail.com')).data)
+        assert result['id'] == 1
         assert result['name'] == 'updated'
         assert result['email'] == 'updated@mail.com'
-        assert result['id'] == 1
 
     def test_delete_user(self):
         users_before_add = json.loads(self.app.get('/users').data)
