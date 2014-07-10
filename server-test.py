@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!virtusize/bin/python
 
 import server
 import unittest

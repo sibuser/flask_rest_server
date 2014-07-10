@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!virtusize/bin/python
 
 from flask import Flask, abort
 from flask.ext.restful import Api, Resource, reqparse, fields, marshal
