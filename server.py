@@ -49,7 +49,7 @@ class UserListApi(Resource):
 
     @staticmethod
     def generate_id():
-        if len(users) == 0:
+        if not users:
             return 1
         else:
             return users[-1]['id'] + 1
@@ -68,7 +68,7 @@ class UserListApi(Resource):
 
         result = filter(lambda item: item['name'] == args['name'] or
                                      item['email'] == args['email'], users)
-        if len(result) != 0:
+        if not result:
             return {'error': 'Username or email exist'}
 
         email_validator = lepl.apps.rfc3696.Email()
@@ -99,26 +99,26 @@ class UserApi(Resource):
     @staticmethod
     def get(user_id):
         user = filter(lambda item: item['id'] == user_id, users)
-        if len(user) == 0:
+        if not user:
             abort(404)
         return {'user': marshal(user[0], get_users_fields)}
 
     def put(self, user_id):
         user = filter(lambda item: item['id'] == user_id, users)
-        if len(user) == 0:
+        if not user:
             abort(404)
         user = user[0]
         args = self.reqparse.parse_args()
 
         for k, v in args.iteritems():
-            if v != None and k != 'id' and k != 'password':
+            if v is not None and k != 'id' and k != 'password':
                 user[k] = v
         return marshal(user, get_users_fields)
 
     @staticmethod
     def delete(user_id):
         user = filter(lambda item: item['id'] == user_id, users)
-        if len(user) == 0:
+        if not user:
             abort(404)
         users.remove(user[0])
         return {'result': True}
@@ -133,6 +133,3 @@ if __name__ == '__main__':
         app.run(debug=True)
     finally:
         save_db()
-
-
-
