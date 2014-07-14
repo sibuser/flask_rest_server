@@ -68,7 +68,7 @@ class UserListApi(Resource):
 
         result = filter(lambda item: item['name'] == args['name'] or
                                      item['email'] == args['email'], users)
-        if not result:
+        if result:
             return {'error': 'Username or email exist'}
 
         email_validator = lepl.apps.rfc3696.Email()
